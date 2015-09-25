@@ -1,0 +1,780 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Bayesian Graphical Models using R</title>
+  <meta charset="utf-8">
+  <meta name="description" content="Bayesian Graphical Models using R">
+  <meta name="author" content="Joe Dumoulin">
+  <meta name="generator" content="slidify" />
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta http-equiv="X-UA-Compatible" content="chrome=1">
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/default.css" media="all" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/phone.css" 
+    media="only screen and (max-device-width: 480px)" >
+  <link rel="stylesheet" href="libraries/frameworks/io2012/css/slidify.css" >
+  <link rel="stylesheet" href="libraries/highlighters/highlight.js/css/tomorrow.css" />
+  <base target="_blank"> <!-- This amazingness opens all links in a new tab. -->  <link rel=stylesheet href="./assets/css/ribbons.css"></link>
+
+  
+  <!-- Grab CDN jQuery, fall back to local if offline -->
+  <script src="http://ajax.aspnetcdn.com/ajax/jQuery/jquery-1.7.min.js"></script>
+  <script>window.jQuery || document.write('<script src="libraries/widgets/quiz/js/jquery.js"><\/script>')</script> 
+  <script data-main="libraries/frameworks/io2012/js/slides" 
+    src="libraries/frameworks/io2012/js/require-1.0.8.min.js">
+  </script>
+  
+  
+
+</head>
+<body style="opacity: 0">
+  <slides class="layout-widescreen">
+    
+    <!-- LOGO SLIDE -->
+        <slide class="title-slide segue nobackground">
+  <hgroup class="auto-fadein">
+    <h1>Bayesian Graphical Models using R</h1>
+    <h2>Presentation for INRUG, September 2015</h2>
+    <p>Joe Dumoulin<br/>Director of Applied Research, Next IT Corp.</p>
+  </hgroup>
+  <article></article>  
+</slide>
+    
+
+    <!-- SLIDES -->
+    <slide class="" id="slide-1" style="background:;">
+  <hgroup>
+    <h2>Why Graphical Models</h2>
+  </hgroup>
+  <article data-timings="">
+    <ol class = "build incremental">
+<li>Express probabilities for inference on knowledge graphs</li>
+<li>Generalize many different algorithms for machine learning</li>
+<li>Organize complex multivariate models to make inference tractable</li>
+</ol>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="class" id="id" style="background:;">
+  <hgroup>
+    <h2>What Are Graphical Models?</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Graphs with random variables at the nodes.</p>
+
+<ul class = "build incremental">
+<li><p>Bayesian Graphical Models - Directed acylic graphs</p></li>
+<li><p>Markov Graphical Models - Undirected graphs</p></li>
+<li><p>Mixed Models - Directed and undirected edges</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-3" style="background:;">
+  <hgroup>
+    <h2>Bayesian Graphical Models - Directed acylic graphs (DAGs)</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div style='float:left;width:48%;padding:2px 4px 3px 4px;' class='centered'>
+    <p><img src="figure/unnamed-chunk-1-1.png" alt="plot of chunk unnamed-chunk-1"> </p>
+
+</div>
+<div style='float:right;width:48%;padding:2px 4px 3px 4px;'>
+    <p>Diagnosing chest problems.  This directed graph organizes conditional relationships between different variables related to causes and symptoms of lung problems.</p>
+
+</div>
+<div>
+    
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-4" style="background:;">
+  <hgroup>
+    <h2>Markov Graphical Models - Undirected graphs</h2>
+  </hgroup>
+  <article data-timings="">
+    <h1></h1>
+
+<div style='float:left;width:48%;padding:2px 4px 3px 4px;' class='centered'>
+    <p><img src="figure/unnamed-chunk-2-1.png" alt="plot of chunk unnamed-chunk-2"> </p>
+
+</div>
+<div style='float:right;width:48%;padding:2px 4px 3px 4px;'>
+    <p>Some multivariate distributions cannot be represented by directed graphs.  One example is the so-called misconception problem.  In this case we have four people, A, B, C, and D some of whom have a misconception relation with each other:
+A misunderstands B 40% of the time, B misunderstands A 15% of the time and so on.  the misconception relation is represented by the undirected edge between two people nodes on the graph.</p>
+
+</div>
+<div>
+    
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-5" style="background:;">
+  <hgroup>
+    <h2>DAGs and Probabilities</h2>
+  </hgroup>
+  <article data-timings="">
+    
+<div style='float:left;width:48%;padding:2px 4px 3px 4px;' class='centered'>
+    <p>In general the graph of a distribution will be fully connected.</p>
+
+<p>This graph represents a distribution that is something like \(P(A,B,C,D,E)\).</p>
+
+<p>We would like to make the graph simpler to reduce the complexity and make it easier to infer results from the distribution.</p>
+
+<p>We can simplify the graph by looking for <strong>Conditional Independencies</strong>.</p>
+
+</div>
+<div style='float:right;width:48%;padding:2px 4px 3px 4px;'>
+    <p><img src="figure/unnamed-chunk-3-1.png" alt="plot of chunk unnamed-chunk-3"> </p>
+
+</div>
+<div>
+    
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-6" style="background:;">
+  <hgroup>
+    <h2>Simplifying Joint Probabilities</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Bayesian Graphical models use some basic rules of probability theory, as well as some simple definitions, to simplfy inference over complicated joint distributions.</p>
+
+<ul class = "build incremental">
+<li><p>Chain Rule for joint distributions:  \(P(A,B,C) = P(A)P(B|A)P(C|A,B)\)</p></li>
+<li><p>Bayes&#39; Rule: \(P(A|B) = \frac{P(A)P(B|A)}{P(B)}\)</p></li>
+<li><p>Independence: \(A \perp B \rightarrow P(A,B) = P(A)P(B)\)</p></li>
+<li><p>Conditional Independence: In distribution P, A is conditionally independent of B given C.</p></li>
+<li><p>\(P \models (A \perp B | C) \rightarrow P(A|B,C) = P(A|C)\)</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-7" style="background:;">
+  <article data-timings="">
+    <!-- Limit image width and height -->
+
+<p><div class=small-img></p>
+
+<style type="text/css">
+.small-img img {     
+  max-height: 350px;
+  max-width: 400px;
+}
+</style>
+
+<h2>Independencies on Graphs</h2>
+
+<p>How can directed graphs represent independencies in a distribution?</p>
+
+<div style='float:left;width:48%;border:1px solid black;padding:2px 4px 3px 4px;' class='centered'>
+    <style type="text/css">
+.p left {     
+  text-align:left;
+}
+</style>
+
+<p><p class="left">
+A is independent of B</p>
+
+<p><img src="figure/unnamed-chunk-4-1.png" alt="plot of chunk unnamed-chunk-4"> 
+ \[A \perp B\]
+ \[P(A,B) = P(A)P(B)\]</p>
+
+</div>
+<div style='float:right;width:48%;border:1px solid black;padding:2px 4px 3px 4px;'>
+    <p>A is <strong>conditionally</strong> independent of B given C: </p>
+
+<p><img src="figure/unnamed-chunk-5-1.png" alt="plot of chunk unnamed-chunk-5"> 
+ \[A \perp B|C\]
+ \[P(A,B,C) = P(A)P(B)P(C|A,B)\]
+</div></p>
+
+</div>
+<div>
+    
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-8" style="background:;">
+  <article data-timings="">
+    <style type="text/css">
+#slide-8 img {     
+  max-height: 450px;
+  max-width: 200px;
+}
+</style>
+
+<h2>Conditional independence and inference</h2>
+
+<p>In the case where Two Nodes A and C are separated, when When does knowledge of A infer knowledge of B?  When is knowledge os A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.</p>
+
+<style type="text/css">
+.p {     
+  text-align:center;
+}
+</style>
+
+<div style='float:left;width:24%;border: 1px solid blue;padding:1px 2px 1px 2px;margin:2px 1px 2px 1px;'>
+    <p><p>
+Causal Trail</p>
+
+<p><img src="figure/unnamed-chunk-6-1.png" alt="plot of chunk unnamed-chunk-6"> </p>
+
+<p>C is Indirectly &#39;Caused&#39; by A <em>unless</em> we know B.  If we know B, then C and A are independent.</p>
+
+</div>
+<div style='float:left;width:24%;border: 1px solid blue;padding:1px 2px 1px 2px;margin:2px 1px 2px 1px;'>
+    <p>Evidential Trail</p>
+
+<p><img src="figure/unnamed-chunk-7-1.png" alt="plot of chunk unnamed-chunk-7"> </p>
+
+<p>C indirectly provides evidence for A <em>unless</em> we know B.  If we know B, then C and A are independent.</p>
+
+</div>
+<div style='float:right;width:24%;border: 1px solid blue;padding:1px 2px 1px 2px;margin:2px 1px 2px 1px;'>
+    <p>Common Effect</p>
+
+<p><img src="figure/unnamed-chunk-9-1.png" alt="plot of chunk unnamed-chunk-9"> </p>
+
+<p>B is dependent on both A and C, but A and C are relatively independent unless B is known.</p>
+
+<p></div></p>
+
+</div>
+<div style='float:right;width:24%;border: 1px solid blue;padding:1px 2px 1px 2px;margin:2px 1px 2px 1px;'>
+    <p>Common Cause</p>
+
+<p><img src="figure/unnamed-chunk-8-1.png" alt="plot of chunk unnamed-chunk-8"> </p>
+
+<p>Both A and C are &quot;caused&quot; by (dependent on) B.  If B is known, A and C are independent.</p>
+
+</div>
+<div>
+    
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-9" style="background:;">
+  <hgroup>
+    <h2>Features of Graphical Models</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Naturally and visually express relationships between random variables</p></li>
+<li><p>Easily visualize and calculate marginal probabilities.</p></li>
+<li><p>Well-understood exact and approximate inference algorithms.</p></li>
+<li><p>Easily visualize the composition of models over common variables.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-10" style="background:;">
+  <hgroup>
+    <h2>Bayesian Network Inference in R</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In the rest of this presentation we use the following packages:</p>
+
+<ul class = "build incremental">
+<li><p>gRain - Graphical Models with discrete distributions</p></li>
+<li><p>gRim - Graphical Interaction Models.  Create log-linear models from tabular data</p></li>
+<li><p>Rgraphviz - Produce most of the graphs in this presentation.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-11" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example using gRain</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>We can look  at a simple example of a joint distribution over discrete Binary valued random variables.  The Chest clinic example[1] uses the following varianbles:</p>
+
+<ul>
+<li>A = Asia (Has the subject visited Asia?)</li>
+<li>S = Smoker (Does the subject Smoke?)</li>
+<li>T = Tuberculosis (Does the subject have tuberculosis?)</li>
+<li>L = Lung Cancer</li>
+<li>B = Bronchitis</li>
+<li>D = Dyspnoea (Is the subject experiencing shortness of breath?)</li>
+<li>X = X-ray (Has the subject had a chest X-ray done?)</li>
+<li>E = Either (Does the subject have either tuberculosis or lung cancer?)</li>
+</ul>
+
+<p>With these eight variables we will create a directed acyclic graph (DAG) that lets us reduce the joint probability to a tractable form.  </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-12" style="background:;">
+  <article data-timings="">
+    <style type="text/css">
+#slide-12 img {     
+  max-height: 300px;
+  max-width: auto;
+}
+</style>
+
+<h2>Example:  The Chest Clinic Example Continued</h2>
+
+<p>given the variables \(V = {A, S, T, L, B, E, D, X}\), we have a joint probability \(p(\theta_v)\) where \(\theta_v\) is a particular set of values of each of the variables in \(V\).</p>
+
+<pre><code class="r">g&lt;-list(~asia, ~tub | asia, ~smoke, ~lung | smoke, ~bronc | smoke, 
+        ~either | lung : tub, ~xray | either, ~dysp | bronc : either)
+chestdag&lt;-dagList(g)
+</code></pre>
+
+<p>Which produces the following DAG:</p>
+
+<p><img src="figure/unnamed-chunk-11-1.png" alt="plot of chunk unnamed-chunk-11"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-13" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example Continued</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Using this dependency model we can add some example conditional probability tables:</p>
+
+<pre><code class="r">yn &lt;- c(&quot;yes&quot;, &quot;no&quot;)
+a &lt;- cptable(~asia, values = c(1,99), levels = yn)
+t.a &lt;- cptable(~tub + asia, values = c(5, 95, 1, 99), levels = yn)
+s &lt;- cptable(~smoke, value = c(5, 5), levels = yn)
+l.s &lt;- cptable(~lung + smoke, values = c(1,9,1,99), levels = yn)
+b.s &lt;- cptable(~bronc + smoke, values = c(6, 4, 3, 7), levels = yn)
+e.lt &lt;- cptable(~either + lung + tub, values = c(1, 0, 1, 0, 1, 0, 0, 1), levels = yn)
+x.e &lt;- cptable(~xray + either, values = c(8, 2, 5, 95), levels = yn)
+d.be &lt;- cptable(~dysp + bronc + either, values = c(9, 1, 7, 3, 8, 2, 1, 9), levels = yn)
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-14" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example Continued</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>we compile the model like this:</p>
+
+<pre><code class="r">plist &lt;- compileCPT(list(a, t.a, s, l.s, b.s, e.lt, x.e, d.be))
+grn1 &lt;- grain(plist)
+summary(grn1)
+</code></pre>
+
+<pre><code>## Independence network: Compiled: FALSE Propagated: FALSE 
+##  Nodes : chr [1:8] &quot;asia&quot; &quot;tub&quot; &quot;smoke&quot; &quot;lung&quot; &quot;bronc&quot; &quot;either&quot; ...
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-15" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example Continued</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>In order to perform queries on the tree we have to compile and propogate the model.  This is done as follows:</p>
+
+<pre><code class="r">grn1c &lt;- compile(grn1, propagate = TRUE)
+
+summary(grn1c)
+</code></pre>
+
+<pre><code>## Independence network: Compiled: TRUE Propagated: TRUE 
+##  Nodes : chr [1:8] &quot;asia&quot; &quot;tub&quot; &quot;smoke&quot; &quot;lung&quot; &quot;bronc&quot; &quot;either&quot; ...
+##  Number of cliques:                 6 
+##  Maximal clique size:               3 
+##  Maximal state space in cliques:    8
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-16" style="background:;">
+  <article data-timings="">
+    <style type="text/css">
+#slide-16 img {     
+  max-height: 300px;
+  max-width: auto;
+}
+</style>
+
+<h2>Example:  The Chest Clinic Example Continued</h2>
+
+<p>Compilation of the directed graph comprises:</p>
+
+<ul class = "build incremental">
+<li><p>Link all parents of a node</p></li>
+<li><p>Convert the graph from directed to undirected</p></li>
+<li><p>Create a clique tree for the resulting undirected graph.</p></li>
+</ul>
+
+<div style='float:left;width:48%;padding:2px 4px 3px 4px;' class='centered'>
+    <p><img src="figure/unnamed-chunk-15-1.png" alt="plot of chunk unnamed-chunk-15"> </p>
+
+</div>
+<div style='float:right;width:48%;padding:2px 4px 3px 4px;'>
+    <p><img src="figure/unnamed-chunk-16-1.png" alt="plot of chunk unnamed-chunk-16"> </p>
+
+</div>
+<div>
+    
+</div>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-17" style="background:;">
+  <article data-timings="">
+    <style type="text/css">
+#slide-16 pre code {     
+  font-size:50%;
+}
+</style>
+
+<pre><code class="r">tmg &lt;- triangulate(moralize(grn1$dag))
+rip(tmg)$cliques
+</code></pre>
+
+<pre><code>## [[1]]
+## [1] &quot;asia&quot; &quot;tub&quot; 
+## 
+## [[2]]
+## [1] &quot;either&quot; &quot;lung&quot;   &quot;tub&quot;   
+## 
+## [[3]]
+## [1] &quot;either&quot; &quot;lung&quot;   &quot;bronc&quot; 
+## 
+## [[4]]
+## [1] &quot;smoke&quot; &quot;lung&quot;  &quot;bronc&quot;
+## 
+## [[5]]
+## [1] &quot;either&quot; &quot;dysp&quot;   &quot;bronc&quot; 
+## 
+## [[6]]
+## [1] &quot;either&quot; &quot;xray&quot;
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-18" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example Continued</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>We can print the rip-ordering of the cliques:</p>
+
+<p><img src="figure/unnamed-chunk-18-1.png" alt="plot of chunk unnamed-chunk-18"> </p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-19" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example Continued - Querying with Evidence</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Suppose that a person has visited asia and suffers from shortness of breath.  What are the marginal probabilities that the person has lung cancer or brochitis?</p>
+
+<pre><code class="r">grn1c.ev &lt;- setFinding(grn1c, nodes=c(&quot;asia&quot;, &quot;dysp&quot;), states=c(&quot;yes&quot;,&quot;yes&quot;))
+querygrain(grn1c.ev, nodes=c(&quot;lung&quot;,&quot;bronc&quot;), type=&quot;marginal&quot;)
+</code></pre>
+
+<pre><code>## $lung
+## lung
+##        yes         no 
+## 0.09952515 0.90047485 
+## 
+## $bronc
+## bronc
+##       yes        no 
+## 0.8114021 0.1885979
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-20" style="background:;">
+  <hgroup>
+    <h2>Example:  The Chest Clinic Example Continued - Querying with Evidence</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>How does this change if the person is a smoker?</p>
+
+<pre><code class="r">grn2c.ev &lt;- setFinding(grn1c, nodes=c(&quot;asia&quot;,&quot;dysp&quot;,&quot;smoke&quot;), 
+                       states=c(&quot;yes&quot;,&quot;yes&quot;,&quot;yes&quot;))
+querygrain(grn2c.ev, nodes=c(&quot;lung&quot;,&quot;bronc&quot;), type=&quot;marginal&quot;)
+</code></pre>
+
+<pre><code>## $lung
+## lung
+##       yes        no 
+## 0.1455191 0.8544809 
+## 
+## $bronc
+## bronc
+##       yes        no 
+## 0.8672582 0.1327418
+</code></pre>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-21" style="background:;">
+  <hgroup>
+    <h2>Summary</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Motivation for using Graphical Models</p></li>
+<li><p>Simple Algorithm for Inference</p></li>
+<li><p>An example showing graph construction and inference</p></li>
+<li><p>Show how evidence affects predictions on the graph</p></li>
+<li><p>Show basic commands in the gRain package.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-22" style="background:;">
+  <hgroup>
+    <h2>Other Topics</h2>
+  </hgroup>
+  <article data-timings="">
+    <ul class = "build incremental">
+<li><p>Markov Networks</p></li>
+<li><p>Inferring graph structure from data</p></li>
+<li><p>Recurring graphs (Modeling temporal systems)</p></li>
+<li><p>Modeling causality on graphs</p></li>
+<li><p>Partially observable varaibles on a graph.</p></li>
+</ul>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+<slide class="" id="slide-23" style="background:;">
+  <hgroup>
+    <h2>Thank you!</h2>
+  </hgroup>
+  <article data-timings="">
+    <p>Questions or Comments?</p>
+
+  </article>
+  <!-- Presenter Notes -->
+</slide>
+
+    <slide class="backdrop"></slide>
+  </slides>
+  <div class="pagination pagination-small" id='io2012-ptoc' style="display:none;">
+    <ul>
+      <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=1 title='Why Graphical Models'>
+         1
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=2 title='What Are Graphical Models?'>
+         2
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=3 title='Bayesian Graphical Models - Directed acylic graphs (DAGs)'>
+         3
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=4 title='Markov Graphical Models - Undirected graphs'>
+         4
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=5 title='DAGs and Probabilities'>
+         5
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=6 title='Simplifying Joint Probabilities'>
+         6
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=7 title='NA'>
+         7
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=8 title='NA'>
+         8
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=9 title='Features of Graphical Models'>
+         9
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=10 title='Bayesian Network Inference in R'>
+         10
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=11 title='Example:  The Chest Clinic Example using gRain'>
+         11
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=12 title='NA'>
+         12
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=13 title='Example:  The Chest Clinic Example Continued'>
+         13
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=14 title='Example:  The Chest Clinic Example Continued'>
+         14
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=15 title='Example:  The Chest Clinic Example Continued'>
+         15
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=16 title='NA'>
+         16
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=17 title='NA'>
+         17
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=18 title='Example:  The Chest Clinic Example Continued'>
+         18
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=19 title='Example:  The Chest Clinic Example Continued - Querying with Evidence'>
+         19
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=20 title='Example:  The Chest Clinic Example Continued - Querying with Evidence'>
+         20
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=21 title='Summary'>
+         21
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=22 title='Other Topics'>
+         22
+      </a>
+    </li>
+    <li>
+      <a href="#" target="_self" rel='tooltip' 
+        data-slide=23 title='Thank you!'>
+         23
+      </a>
+    </li>
+  </ul>
+  </div>  <!--[if IE]>
+    <script 
+      src="http://ajax.googleapis.com/ajax/libs/chrome-frame/1/CFInstall.min.js">  
+    </script>
+    <script>CFInstall.check({mode: 'overlay'});</script>
+  <![endif]-->
+</body>
+  <!-- Load Javascripts for Widgets -->
+  
+  <!-- MathJax: Fall back to local if CDN offline but local image fonts are not supported (saves >100MB) -->
+  <script type="text/x-mathjax-config">
+    MathJax.Hub.Config({
+      tex2jax: {
+        inlineMath: [['$','$'], ['\\(','\\)']],
+        processEscapes: true
+      }
+    });
+  </script>
+  <script type="text/javascript" src="http://cdn.mathjax.org/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML"></script>
+  <!-- <script src="https://c328740.ssl.cf1.rackcdn.com/mathjax/2.0-latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML">
+  </script> -->
+  <script>window.MathJax || document.write('<script type="text/x-mathjax-config">MathJax.Hub.Config({"HTML-CSS":{imageFont:null}});<\/script><script src="libraries/widgets/mathjax/MathJax.js?config=TeX-AMS-MML_HTMLorMML"><\/script>')
+</script>
+<!-- LOAD HIGHLIGHTER JS FILES -->
+  <script src="libraries/highlighters/highlight.js/highlight.pack.js"></script>
+  <script>hljs.initHighlightingOnLoad();</script>
+  <!-- DONE LOADING HIGHLIGHTER JS FILES -->
+   
+  </html>
