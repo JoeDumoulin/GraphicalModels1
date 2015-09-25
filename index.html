@@ -226,7 +226,7 @@ A is independent of B</p>
 
 <h2>Conditional independence and inference</h2>
 
-<p>In the case where Two Nodes A and C are separated, when When does knowledge of A infer knowledge of B?  When is knowledge os A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.</p>
+<p>In the case where Two Nodes A and C are separated, when does knowledge of A infer knowledge of B?  When is knowledge of A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.</p>
 
 <style type="text/css">
 .p {     
@@ -462,13 +462,7 @@ summary(grn1c)
 
 <slide class="" id="slide-17" style="background:;">
   <article data-timings="">
-    <style type="text/css">
-#slide-16 pre code {     
-  font-size:50%;
-}
-</style>
-
-<pre><code class="r">tmg &lt;- triangulate(moralize(grn1$dag))
+    <pre><code class="r">tmg &lt;- triangulate(moralize(grn1$dag))
 rip(tmg)$cliques
 </code></pre>
 

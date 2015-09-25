@@ -129,7 +129,7 @@ A is **conditionally** independent of B given C:
 
 ## Conditional independence and inference
 
-In the case where Two Nodes A and C are separated, when When does knowledge of A infer knowledge of B?  When is knowledge os A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.
+In the case where Two Nodes A and C are separated, when does knowledge of A infer knowledge of B?  When is knowledge of A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.
 
 <style type="text/css">
 .p {     
@@ -315,11 +315,6 @@ Compilation of the directed graph comprises:
 ![plot of chunk unnamed-chunk-16](figure/unnamed-chunk-16-1.png) 
 
 ---
-<style type="text/css">
-#slide-16 pre code {     
-  font-size:50%;
-}
-</style>
 
 
 ```r

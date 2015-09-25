@@ -200,7 +200,7 @@ plot(rag)
 
 ## Conditional independence and inference
 
-In the case where Two Nodes A and C are separated, when When does knowledge of A infer knowledge of B?  When is knowledge os A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.
+In the case where Two Nodes A and C are separated, when does knowledge of A infer knowledge of B?  When is knowledge of A independent of knowledge of B?  There are four basic graph expressions to represent different models of inference.
 
 <style type="text/css">
 .p {     
@@ -432,11 +432,6 @@ plot(tmg)
 ```
 
 ---
-<style type="text/css">
-#slide-16 pre code {     
-  font-size:50%;
-}
-</style>
 
 ```{r}
 tmg <- triangulate(moralize(grn1$dag))
