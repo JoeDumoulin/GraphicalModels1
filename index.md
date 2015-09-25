@@ -197,7 +197,7 @@ In the rest of this presentation we use the following packages:
 ---
 
 ## Example:  The Chest Clinic Example using gRain
-We can look  at a simple example of a joint distribution over discrete Binary valued random variables.  The Chest clinic example[1] uses the following varianbles:
+We can look  at a simple example of a joint distribution over discrete Binary valued random variables.  The Chest clinic example uses the following variables:
 
 * A = Asia (Has the subject visited Asia?)
 * S = Smoker (Does the subject Smoke?)
@@ -421,6 +421,17 @@ querygrain(grn2c.ev, nodes=c("lung","bronc"), type="marginal")
 > * Modeling causality on graphs
 
 > * Partially observable varaibles on a graph.
+
+---
+## Acknowledgements
+
+1. Probabilistic Graphical Models, Koller & Friedman, MIT Press, 2009.
+2. Dr Koller's excellent coursera course on Graphical Models at <https://www.coursera.org/course/pgm>
+3. Graphical Models in R, Søren Højsgaard, David Edwards, & Steffen Lauritzen, Springer, 2012.
+4. Graphical Models and Bayesian Networks, Tutorail at UseR! 2014 - Los Angeles, Søren Højsgaard, <http://people.math.aau.dk/~sorenh/misc/2014-useR-GMBN/bayesnet-slides.pdf>.
+5. The R package gRain: <https://cran.r-project.org/web/packages/gRain/gRain.pdf>.
+6. The software package Hugin and the R package RHugin: <https://github.com/rforge/rhugin/blob/master/trunk/inst/doc/RHugin.pdf>
+7. R presentation was built using [slidify](http://slidify.org/)
 
 ---
 ## Thank you! 
